@@ -11,10 +11,15 @@ import (
 	"github.com/gocolly/colly"
 )
 
+var psAvailable bool = false
+
 func main() {
 	// Check every 5 minutes
-	for range time.NewTicker(5 * time.Second).C {
+	for range time.NewTicker(5 * time.Minute).C {
 		webScraper()
+		if psAvailable {
+			break
+		}
 	}
 }
 
@@ -41,9 +46,10 @@ func webScraper() {
 
 	// Email me if PLaystation is available
 
-	if strings.Contains(htmlElementClean, "Currently unavailable.") != true {
+	if strings.Contains(htmlElementClean, "unavailable") != true {
 		fmt.Println("PS5 Available.")
 		mail(htmlElementClean)
+		psAvailable = true
 	}
 }
 
