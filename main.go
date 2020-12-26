@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// Check every 5 minutes
-	for range time.NewTicker(5 * time.Minute).C {
+	for range time.NewTicker(5 * time.Second).C {
 		webScraper()
 	}
 }
@@ -40,7 +40,8 @@ func webScraper() {
 	c.Visit("https://www.amazon.co.uk/dp/B08H97NYGP/ref=twister_B08J4RCVXW?_encoding=UTF8&psc=1")
 
 	// Email me if PLaystation is available
-	if htmlElementClean[:22] != "Currently unavailable." {
+
+	if strings.Contains(htmlElementClean, "Currently unavailable.") != true {
 		fmt.Println("PS5 Available.")
 		mail(htmlElementClean)
 	}
