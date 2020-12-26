@@ -16,8 +16,8 @@ var psAvailable bool = false
 func main() {
 	// Check every 5 minutes
 	for range time.NewTicker(5 * time.Minute).C {
-		if psAvailable != true {
-			webScraper()
+		webScraper()
+		if psAvailable {
 			break
 		}
 	}
