@@ -14,7 +14,9 @@ import (
 var psAvailable bool = false
 
 func main() {
-	// Check every 5 minutes
+	// Check on start
+	webScraper()
+	// Then check every n minute(s)
 	for range time.NewTicker(5 * time.Minute).C {
 		webScraper()
 		if psAvailable {
