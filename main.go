@@ -11,14 +11,15 @@ import (
 	"github.com/gocolly/colly"
 )
 
-var psAvailable bool = false
+var psAvailable bool
 
 func main() {
 	// Check on start
 	webScraper()
 	// Then check every n minute(s)
-	for range time.NewTicker(5 * time.Minute).C {
+	for range time.NewTicker(2 * time.Minute).C {
 		webScraper()
+		// When Playstation is available, end loop
 		if psAvailable {
 			break
 		}
@@ -31,13 +32,12 @@ func webScraper() {
 
 	var htmlElementClean string
 
-	// On every a element which has href attribute call callback
+	// On every div element with id availability
 	c.OnHTML("div[id='availability']", func(e *colly.HTMLElement) {
 		htmlElement := e.Text
 		htmlElementClean = strings.Replace(htmlElement, "\n", "", -1)
-		// fmt.Printf("Availability: %q", htmlElementClean)
 	})
-	// Before making a request print "Visiting ..."
+
 	c.OnRequest(func(r *colly.Request) {
 		t := time.Now().UTC()
 		fmt.Println(t.String(), "visiting:", r.URL.String())
@@ -46,8 +46,7 @@ func webScraper() {
 	// Start scraping
 	c.Visit("https://www.amazon.co.uk/dp/B08H97NYGP/ref=twister_B08J4RCVXW?_encoding=UTF8&psc=1")
 
-	// Email me if PLaystation is available
-
+	// Receive email if Playstation is available
 	if strings.Contains(htmlElementClean, "unavailable") != true {
 		fmt.Println("PS5 Available.")
 		mail(htmlElementClean)
