@@ -47,7 +47,7 @@ func webScraper() {
 	c.Visit("https://www.amazon.co.uk/dp/B08H97NYGP/ref=twister_B08J4RCVXW?_encoding=UTF8&psc=1")
 
 	// Receive email if Playstation is available
-	if strings.Contains(htmlElementClean, "unavailable") != true {
+	if !strings.Contains(htmlElementClean, "unavailable") {
 		fmt.Println("PS5 Available.")
 		mail(htmlElementClean)
 		psAvailable = true
