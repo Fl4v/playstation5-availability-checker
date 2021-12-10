@@ -1,0 +1,7 @@
+{
+  "amazon": {
+    "url": "https://www.amazon.co.uk/dp/B08H97NYGP/ref=twister_B08J4RCVXW?_encoding=UTF8&psc=1",
+    "div": "div[id='availability']",
+    "availability": "unavailable"
+  }
+}

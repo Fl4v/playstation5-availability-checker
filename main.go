@@ -11,29 +11,30 @@ import (
 	"github.com/gocolly/colly"
 )
 
-var psAvailable bool
+var siteUrl string
 
 func main() {
 	// Check on start
-	webScraper()
+	webScraper("div[id='availability']", "https://www.amazon.co.uk/dp/B08H97NYGP/ref=twister_B08J4RCVXW?_encoding=UTF8&psc=1", "buy")
 	// Then check every n minute(s)
 	for range time.NewTicker(2 * time.Minute).C {
-		webScraper()
+		availalbe := webScraper("div[id='availability']", "https://www.amazon.co.uk/dp/B08H97NYGP/ref=twister_B08J4RCVXW?_encoding=UTF8&psc=1", "unavailable")
+		fmt.Println("sss")
 		// When Playstation is available, end loop
-		if psAvailable {
-			break
+		if availalbe {
+			mail(siteUrl)
 		}
 	}
 }
 
-func webScraper() {
+func webScraper(div string, site string, availability string) bool {
 	// Instantiate default collector
 	c := colly.NewCollector()
 
 	var htmlElementClean string
 
 	// On every div element with id availability
-	c.OnHTML("div[id='availability']", func(e *colly.HTMLElement) {
+	c.OnHTML(div, func(e *colly.HTMLElement) {
 		htmlElement := e.Text
 		htmlElementClean = strings.Replace(htmlElement, "\n", "", -1)
 	})
@@ -44,14 +45,15 @@ func webScraper() {
 	})
 
 	// Start scraping
-	c.Visit("https://www.amazon.co.uk/dp/B08H97NYGP/ref=twister_B08J4RCVXW?_encoding=UTF8&psc=1")
+	c.Visit(site)
 
 	// Receive email if Playstation is available
-	if !strings.Contains(htmlElementClean, "unavailable") {
+	if !strings.Contains(htmlElementClean, availability) {
 		fmt.Println("PS5 Available.")
-		mail(htmlElementClean)
-		psAvailable = true
+		siteUrl = site
+		return true
 	}
+	return false
 }
 
 func mail(body string) {
@@ -66,6 +68,7 @@ func mail(body string) {
 		"\r\n" +
 		body +
 		"\r\n")
+
 	err := smtp.SendMail("smtp.gmail.com:25", auth, os.Getenv("SMTP_EMAIL"), to, msg)
 	if err != nil {
 		log.Fatal(err)
